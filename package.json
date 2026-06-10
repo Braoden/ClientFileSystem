@@ -1,0 +1,56 @@
+{
+  "name": "client-file-system",
+  "version": "1.0.0",
+  "description": "AI-powered client file explorer desktop app",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "concurrently \"npm run backend\" \"npm run frontend\" \"wait-on http://localhost:3000 && npm run electron\"",
+    "backend": "node backend/server.js",
+    "frontend": "cd frontend && npm start",
+    "electron": "electron .",
+    "build": "cd frontend && npm run build",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.clientfilesystem.app",
+    "productName": "Client File System",
+    "files": [
+      "electron/**/*",
+      "backend/**/*",
+      "frontend/build/**/*",
+      "node_modules/**/*",
+      ".env"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "frontend/build",
+        "to": "frontend/build",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.2"
+  }
+}
