@@ -1,6 +1,6 @@
 {
   "name": "client-file-system",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered client file explorer desktop app",
   "main": "electron/main.js",
   "scripts": {
@@ -17,18 +17,9 @@
     "files": [
       "electron/**/*",
       "backend/**/*",
-      "frontend/build/**/*",
-      "node_modules/**/*",
-      ".env"
+      "node_modules/**/*"
     ],
     "extraResources": [
-      {
-        "from": "backend",
-        "to": "backend",
-        "filter": [
-          "**/*"
-        ]
-      },
       {
         "from": "frontend/build",
         "to": "frontend/build",
@@ -49,6 +40,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1"
+  },
   "devDependencies": {
     "electron": "^42.4.0",
     "electron-builder": "^26.15.2"

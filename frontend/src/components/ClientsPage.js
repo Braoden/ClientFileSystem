@@ -10,6 +10,7 @@ export default function ClientsPage({ clients, onClientCreated, onClientDeleted 
   const [showApiKey, setShowApiKey] = useState(false);
   const [form, setForm] = useState({ name: '', dateOfBirth: '', notes: '' });
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
 
   const filtered = [...clients]
     .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
@@ -30,15 +31,18 @@ export default function ClientsPage({ clients, onClientCreated, onClientDeleted 
     e.preventDefault();
     if (!form.name.trim()) return;
     setCreating(true);
-    await fetch('/api/clients', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    setForm({ name: '', dateOfBirth: '', notes: '' });
-    setShowForm(false);
-    setCreating(false);
-    onClientCreated();
+    try {
+      await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      setForm({ name: '', dateOfBirth: '', notes: '' });
+      setShowForm(false);
+      onClientCreated();
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (

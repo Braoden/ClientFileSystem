@@ -1,4 +1,3 @@
-require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -12,18 +11,24 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-// Root directory where client folders live
-const CLIENTS_DIR = path.join(__dirname, '..', 'clients');
-if (!fs.existsSync(CLIENTS_DIR)) fs.mkdirSync(CLIENTS_DIR);
+// Data root: Electron passes DATA_DIR (userData) in packaged builds, where
+// the install directory is read-only. In dev it defaults to the repo root.
+const DATA_ROOT = process.env.DATA_DIR || path.join(__dirname, '..');
 
-const savedKey = fs.existsSync(path.join(__dirname, '..', 'settings.json'))
-  ? JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'settings.json'), 'utf8')).apiKey
-  : null;
-const anthropic = new Anthropic({ apiKey: savedKey || process.env.ANTHROPIC_API_KEY });
+// Root directory where client folders live
+const CLIENTS_DIR = path.join(DATA_ROOT, 'clients');
+if (!fs.existsSync(CLIENTS_DIR)) fs.mkdirSync(CLIENTS_DIR, { recursive: true });
+
+function getAnthropicClient() {
+  const settings = loadSettings();
+  const apiKey = settings.apiKey || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('No API key configured. Please add one in Settings.');
+  return new Anthropic({ apiKey });
+}
 
 // ── Settings ─────────────────────────────────────────────────────────────────
 
-const SETTINGS_PATH = path.join(__dirname, '..', 'settings.json');
+const SETTINGS_PATH = path.join(DATA_ROOT, 'settings.json');
 
 function loadSettings() {
   if (!fs.existsSync(SETTINGS_PATH)) return {};
@@ -39,7 +44,6 @@ app.post('/api/settings', (req, res) => {
   const settings = loadSettings();
   if (req.body.apiKey) settings.apiKey = req.body.apiKey;
   fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));
-  anthropic.apiKey = settings.apiKey;
   res.json({ success: true });
 });
 
@@ -213,6 +217,13 @@ Answer questions about this client accurately and helpfully. If you don't know s
     { role: 'user', content: userContent },
   ];
 
+  let anthropic;
+  try {
+    anthropic = getAnthropicClient();
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
@@ -247,5 +258,11 @@ app.delete('/api/clients/:id/chat', (req, res) => {
   fs.writeFileSync(chatPath, JSON.stringify([], null, 2));
   res.json({ success: true });
 });
+
+const FRONTEND_BUILD = process.env.FRONTEND_BUILD_PATH || path.join(__dirname, '..', 'frontend', 'build');
+if (fs.existsSync(FRONTEND_BUILD)) {
+  app.use(express.static(FRONTEND_BUILD));
+  app.get('*', (req, res) => res.sendFile(path.join(FRONTEND_BUILD, 'index.html')));
+}
 
 app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
