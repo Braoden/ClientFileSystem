@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import ChatPanel from './components/ChatPanel';
+import ClientFilesPage from './components/ClientFilesPage';
+import ClientsPage from './components/ClientsPage';
 import './App.css';
 
-export default function App() {
-  const [clients, setClients] = useState([]);
+function ChatLayout({ clients, fetchClients }) {
+  const location = useLocation();
   const [selectedClient, setSelectedClient] = useState(null);
 
-  const fetchClients = async () => {
-    const res = await fetch('/api/clients');
-    const data = await res.json();
-    setClients(data);
+  // If navigated here with a client pre-selected (from ClientsPage)
+  useEffect(() => {
+    if (location.state?.selectClientId && clients.length > 0) {
+      const match = clients.find((c) => c.id === location.state.selectClientId);
+      if (match) setSelectedClient(match);
+    }
+  }, [location.state, clients]);
+
+  const handleClientDeleted = (id) => {
+    if (selectedClient?.id === id) setSelectedClient(null);
+    fetchClients();
   };
 
-  useEffect(() => {
+  const handleClientUpdated = (updated) => {
+    setSelectedClient(updated);
     fetchClients();
-  }, []);
-
-  const handleClientCreated = () => fetchClients();
-  const handleClientDeleted = (id) => {
-    setClients((prev) => prev.filter((c) => c.id !== id));
-    if (selectedClient?.id === id) setSelectedClient(null);
   };
 
   return (
@@ -29,20 +34,59 @@ export default function App() {
         clients={clients}
         selectedClient={selectedClient}
         onSelectClient={setSelectedClient}
-        onClientCreated={handleClientCreated}
+        onClientCreated={fetchClients}
         onClientDeleted={handleClientDeleted}
+        onClientUpdated={handleClientUpdated}
       />
       <main className="main-panel">
         {selectedClient ? (
           <ChatPanel client={selectedClient} />
         ) : (
           <div className="empty-state">
-            <div className="empty-icon">📁</div>
-            <h2>Select a client to start chatting</h2>
-            <p>Choose a client from the sidebar or create a new one.</p>
+            <div className="empty-icon">💬</div>
+            <h2>No client selected</h2>
+            <p>Use <strong>◄ Clients</strong> in the sidebar to select a client.</p>
           </div>
         )}
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  const [clients, setClients] = useState([]);
+
+  const fetchClients = async () => {
+    const res = await fetch('/api/clients');
+    const data = await res.json();
+    setClients(data);
+  };
+
+  useEffect(() => { fetchClients(); }, []);
+
+  const handleClientDeleted = (id) => {
+    setClients((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  return (
+    <HashRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ClientsPage
+              clients={clients}
+              onClientCreated={fetchClients}
+              onClientDeleted={handleClientDeleted}
+            />
+          }
+        />
+        <Route path="/chat" element={<ChatLayout clients={clients} fetchClients={fetchClients} />} />
+        <Route
+          path="/client-files"
+          element={<ClientFilesPage clients={clients} onClientsChanged={fetchClients} />}
+        />
+      </Routes>
+    </HashRouter>
   );
 }

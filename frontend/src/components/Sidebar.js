@@ -1,110 +1,98 @@
-import React, { useState } from 'react';
-import SettingsModal from './SettingsModal';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ProfileModal from './ProfileModal';
 import './Sidebar.css';
 
-export default function Sidebar({ clients, selectedClient, onSelectClient, onClientCreated, onClientDeleted }) {
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', dateOfBirth: '', notes: '' });
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
-  const [showSettings, setShowSettings] = useState(false);
+const FILE_ICONS = {
+  pdf: '📄', png: '🖼', jpg: '🖼', jpeg: '🖼', gif: '🖼', webp: '🖼',
+  txt: '📝', md: '📝', csv: '📊', json: '📊', html: '🌐',
+};
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    if (!form.name.trim()) return;
-    setLoading(true);
-    await fetch('/api/clients', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    setForm({ name: '', dateOfBirth: '', notes: '' });
-    setShowForm(false);
-    setLoading(false);
-    onClientCreated();
-  };
+function fileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  return FILE_ICONS[ext] || '📎';
+}
 
-  const handleDelete = async (e, id) => {
-    e.stopPropagation();
-    if (!window.confirm('Delete this client and all their data?')) return;
-    await fetch(`/api/clients/${id}`, { method: 'DELETE' });
-    onClientDeleted(id);
-  };
+function formatSize(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export default function Sidebar({ clients, selectedClient, onSelectClient, onClientCreated, onClientDeleted, onClientUpdated }) {
+  const navigate = useNavigate();
+  const [showProfile, setShowProfile] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [filesLoading, setFilesLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedClient) { setFiles([]); return; }
+    setFilesLoading(true);
+    fetch(`/api/clients/${selectedClient.id}/files`)
+      .then((r) => r.json())
+      .then((data) => { setFiles(data); setFilesLoading(false); })
+      .catch(() => setFilesLoading(false));
+  }, [selectedClient]);
 
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
         <span className="sidebar-title">📁 Clients</span>
-        <button className="btn-icon" onClick={() => setShowForm((v) => !v)} title="New client">
-          {showForm ? '✕' : '+'}
-        </button>
       </div>
 
-      {showForm && (
-        <form className="new-client-form" onSubmit={handleCreate}>
-          <input
-            placeholder="Client name *"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
-          <input
-            placeholder="Date of Birth (e.g. 1990-04-15)"
-            value={form.dateOfBirth}
-            onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
-          />
-          <textarea
-            placeholder="Notes"
-            value={form.notes}
-            onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            rows={3}
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Creating…' : 'Create Client'}
-          </button>
-        </form>
-      )}
+      <button className="btn-nav-files" onClick={() => navigate('/')}>
+        ◄ Back
+      </button>
 
-      <div className="search-bar">
-        <input
-          placeholder="Search clients…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      <ul className="client-list">
-        {clients.length === 0 && (
-          <li className="no-clients">No clients yet. Click + to add one.</li>
-        )}
-        {clients.filter((c) => c.name.toLowerCase().includes(search.toLowerCase())).map((client) => (
-          <li
-            key={client.id}
-            className={`client-item ${selectedClient?.id === client.id ? 'active' : ''}`}
-            onClick={() => onSelectClient(client)}
-          >
-            <div className="client-icon">👤</div>
-            <div className="client-info">
-              <span className="client-name">{client.name}</span>
-              {client.dateOfBirth && <span className="client-industry">DOB: {client.dateOfBirth}</span>}
-            </div>
-            <button
-              className="btn-delete"
-              onClick={(e) => handleDelete(e, client.id)}
-              title="Delete client"
+      <div className="sidebar-files-section">
+        <div className="sidebar-files-label">
+          {selectedClient ? `${selectedClient.name}'s Files` : 'Files'}
+        </div>
+        <div className="sidebar-files-list">
+          {!selectedClient && (
+            <p className="sidebar-files-empty">Select a client to see their files.</p>
+          )}
+          {selectedClient && filesLoading && (
+            <p className="sidebar-files-empty">Loading…</p>
+          )}
+          {selectedClient && !filesLoading && files.length === 0 && (
+            <p className="sidebar-files-empty">No files uploaded yet.</p>
+          )}
+          {files.map((f) => (
+            <div
+              key={f.filename}
+              className="sidebar-file-item"
+              onDoubleClick={() => window.open(`http://localhost:3001/api/clients/${selectedClient.id}/files/${f.filename}/serve`, '_blank')}
+              title="Double-click to open"
             >
-              🗑
-            </button>
-          </li>
-        ))}
-      </ul>
+              <span className="sidebar-file-icon">{fileIcon(f.originalName)}</span>
+              <div className="sidebar-file-info">
+                <span className="sidebar-file-name" title={f.originalName}>{f.originalName}</span>
+                <span className="sidebar-file-size">{formatSize(f.size)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="sidebar-footer">
-        <button className="btn-settings" onClick={() => setShowSettings(true)} title="Settings">
-          ⚙️ Settings
+        <button
+          className="btn-settings"
+          onClick={() => selectedClient && setShowProfile(true)}
+          disabled={!selectedClient}
+          title={selectedClient ? 'Edit client profile' : 'Select a client first'}
+        >
+          ✏️ Client Profile Settings
         </button>
       </div>
 
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      {showProfile && selectedClient && (
+        <ProfileModal
+          client={selectedClient}
+          onClose={() => setShowProfile(false)}
+          onSaved={(updated) => { onClientUpdated(updated); setShowProfile(false); }}
+        />
+      )}
     </aside>
   );
 }

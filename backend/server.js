@@ -126,6 +126,12 @@ app.get('/api/clients/:id/files', (req, res) => {
   res.json(files);
 });
 
+app.get('/api/clients/:id/files/:filename/serve', (req, res) => {
+  const filePath = path.join(CLIENTS_DIR, req.params.id, 'files', req.params.filename);
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found' });
+  res.sendFile(filePath);
+});
+
 app.delete('/api/clients/:id/files/:filename', (req, res) => {
   const filePath = path.join(CLIENTS_DIR, req.params.id, 'files', req.params.filename);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);

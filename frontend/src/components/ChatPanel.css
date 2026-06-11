@@ -7,28 +7,79 @@
 
 .chat-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid #313244;
   background: #181825;
+  gap: 16px;
 }
 
-.chat-client-info {
+.client-profile-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #89b4fa;
+  color: #1e1e2e;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  min-width: 0;
 }
 
-.chat-client-name {
+.profile-name {
   font-size: 16px;
   font-weight: 600;
   color: #cdd6f4;
 }
 
-.chat-client-industry {
+.profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.profile-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 12px;
+  color: #a6adc8;
+}
+
+.profile-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: #6c7086;
+}
+
+.profile-notes {
+  font-size: 12px;
+  color: #a6adc8;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 500px;
+  padding-top: 2px;
 }
 
 .btn-clear {
@@ -37,6 +88,7 @@
   color: #6c7086;
   border-radius: 6px;
   padding: 6px 12px;
+  margin-top: 8px;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s;

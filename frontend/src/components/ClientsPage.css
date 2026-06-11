@@ -1,0 +1,217 @@
+/* ── Top bar ── */
+.cp-topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 32px;
+  background: #181825;
+  border-bottom: 1px solid #313244;
+  flex-shrink: 0;
+}
+
+.cp-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #cdd6f4;
+  flex: 1;
+}
+
+.cp-count {
+  font-size: 13px;
+  color: #6c7086;
+  background: #313244;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.cp-btn-new {
+  background: #89b4fa;
+  color: #1e1e2e;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.cp-btn-new:hover { opacity: 0.85; }
+
+.cp-btn-settings {
+  background: #313244;
+  border: 1px solid #45475a;
+  border-radius: 8px;
+  color: #a6adc8;
+  font-size: 16px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.cp-btn-settings:hover { background: #45475a; color: #cdd6f4; }
+
+/* ── New client form ── */
+.cp-new-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 16px 32px;
+  background: #181825;
+  border-bottom: 1px solid #313244;
+  flex-shrink: 0;
+}
+
+.cp-new-form input,
+.cp-new-form textarea {
+  background: #313244;
+  border: 1px solid #45475a;
+  border-radius: 8px;
+  color: #cdd6f4;
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.cp-new-form input:focus,
+.cp-new-form textarea:focus { border-color: #89b4fa; }
+
+.cp-new-form input:nth-child(1) { flex: 2; }
+.cp-new-form input:nth-child(2) { flex: 1.2; }
+.cp-new-form textarea { flex: 2; resize: none; }
+
+.cp-new-form button {
+  background: #89b4fa;
+  color: #1e1e2e;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+.cp-new-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Search ── */
+.cp-search-wrap {
+  padding: 20px 32px 12px;
+  flex-shrink: 0;
+}
+
+.cp-search {
+  width: 100%;
+  max-width: 480px;
+  background: #313244;
+  border: 1px solid #45475a;
+  border-radius: 8px;
+  color: #cdd6f4;
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+.cp-search:focus { border-color: #89b4fa; }
+.cp-search::placeholder { color: #6c7086; }
+
+/* ── Client list ── */
+.cp-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cp-empty {
+  margin: 48px auto;
+  color: #6c7086;
+  font-size: 14px;
+  text-align: center;
+}
+
+.cp-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #181825;
+  border: 1px solid #313244;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cp-row:hover {
+  background: #1e1e2e;
+  border-color: #45475a;
+}
+
+.cp-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #89b4fa;
+  color: #1e1e2e;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cp-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #cdd6f4;
+}
+
+.cp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: #6c7086;
+}
+
+.cp-notes {
+  color: #a6adc8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.cp-btn-delete {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #6c7086;
+  font-size: 16px;
+  padding: 5px 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.cp-row:hover .cp-btn-delete { opacity: 1; }
+.cp-btn-delete:hover {
+  border-color: #f38ba8;
+  color: #f38ba8;
+  background: #f38ba810;
+}

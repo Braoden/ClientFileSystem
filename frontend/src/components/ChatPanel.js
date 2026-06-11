@@ -92,9 +92,24 @@ export default function ChatPanel({ client }) {
   return (
     <div className="chat-panel">
       <div className="chat-header">
-        <div className="chat-client-info">
-          <span className="chat-client-name">👤 {client.name}</span>
-          {client.dateOfBirth && <span className="chat-client-industry">DOB: {client.dateOfBirth}</span>}
+        <div className="client-profile-card">
+          <div className="profile-avatar">
+            {client.name.charAt(0).toUpperCase()}
+          </div>
+          <div className="profile-details">
+            <div className="profile-name">{client.name}</div>
+            <div className="profile-meta">
+              {client.dateOfBirth && (
+                <span className="profile-field">
+                  <span className="profile-label">DOB</span>
+                  {client.dateOfBirth}
+                </span>
+              )}
+            </div>
+            {client.notes && (
+              <div className="profile-notes">{client.notes}</div>
+            )}
+          </div>
         </div>
         <button className="btn-clear" onClick={clearChat} title="Clear chat history">
           Clear chat

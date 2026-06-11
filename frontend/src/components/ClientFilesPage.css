@@ -1,0 +1,266 @@
+.cfp-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #1e1e2e;
+  color: #cdd6f4;
+}
+
+.cfp-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: #181825;
+  border-bottom: 1px solid #313244;
+  flex-shrink: 0;
+}
+
+.cfp-back {
+  background: none;
+  border: 1px solid #45475a;
+  border-radius: 8px;
+  color: #a6adc8;
+  font-size: 13px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cfp-back:hover {
+  background: #313244;
+  color: #cdd6f4;
+}
+
+.cfp-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #cdd6f4;
+}
+
+.cfp-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Left panel ── */
+.cfp-clients {
+  width: 240px;
+  min-width: 240px;
+  background: #181825;
+  border-right: 1px solid #313244;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.cfp-clients-header {
+  padding: 12px 16px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6c7086;
+  flex-shrink: 0;
+}
+
+.cfp-empty {
+  padding: 20px 16px;
+  font-size: 13px;
+  color: #6c7086;
+  text-align: center;
+}
+
+.cfp-client-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 2px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.cfp-client-item:hover { background: #313244; }
+.cfp-client-item.active { background: #45475a; }
+
+.cfp-client-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #89b4fa;
+  color: #1e1e2e;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cfp-client-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cfp-client-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #cdd6f4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cfp-client-dob {
+  font-size: 11px;
+  color: #6c7086;
+}
+
+/* ── Right panel ── */
+.cfp-files {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cfp-files-empty {
+  margin: auto;
+  color: #6c7086;
+  font-size: 14px;
+  text-align: center;
+}
+
+.cfp-files-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #313244;
+  background: #181825;
+  flex-shrink: 0;
+}
+
+.cfp-files-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cfp-files-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #89b4fa;
+  color: #1e1e2e;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cfp-files-clientname {
+  font-size: 16px;
+  font-weight: 600;
+  color: #cdd6f4;
+}
+
+.cfp-files-count {
+  font-size: 12px;
+  color: #6c7086;
+  background: #313244;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.cfp-btn-upload {
+  background: #89b4fa;
+  color: #1e1e2e;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.cfp-btn-upload:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cfp-file-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cfp-dropzone {
+  margin: auto;
+  text-align: center;
+  color: #6c7086;
+  font-size: 14px;
+  line-height: 2;
+}
+.cfp-dropzone-icon { font-size: 48px; display: block; margin-bottom: 8px; }
+.cfp-dropzone strong { color: #a6adc8; }
+
+.cfp-file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #181825;
+  border: 1px solid #313244;
+  transition: border-color 0.12s;
+}
+.cfp-file-row:hover { border-color: #45475a; }
+
+.cfp-file-icon { font-size: 22px; flex-shrink: 0; }
+
+.cfp-file-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.cfp-file-name {
+  font-size: 14px;
+  color: #cdd6f4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cfp-file-meta {
+  font-size: 12px;
+  color: #6c7086;
+  margin-top: 2px;
+}
+
+.cfp-btn-delete {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #6c7086;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.cfp-btn-delete:hover {
+  border-color: #f38ba8;
+  color: #f38ba8;
+  background: #f38ba810;
+}
+.cfp-btn-delete:disabled { opacity: 0.4; cursor: not-allowed; }
