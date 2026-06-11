@@ -17,51 +17,12 @@ An AI-powered desktop app for managing client files and folders, built with Elec
 - **Desktop shell:** Electron
 - **AI:** Anthropic Claude API (`@anthropic-ai/sdk`)
 
-## Prerequisites
+## Installation
 
-- [Node.js](https://nodejs.org/) v18+
-- An [Anthropic API key](https://console.anthropic.com/)
-
-## Getting Started
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Braoden/ClientFileSystem.git
-   cd ClientFileSystem
-   ```
-
-2. Install root dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Install frontend dependencies:
-   ```bash
-   cd frontend && npm install && cd ..
-   ```
-
-4. Install backend dependencies:
-   ```bash
-   cd backend && npm install && cd ..
-   ```
-
-5. Create a `.env` file in the project root (optional — you can also set the key in the app's Settings screen):
-   ```
-   ANTHROPIC_API_KEY=your_api_key_here
-   ```
-
-6. Start the app in development mode:
-   ```bash
-   npm start
-   ```
-
-## Building a Distributable
-
-```bash
-npm run dist
-```
-
-The installer will be output to the `dist/` directory.
+1. Go to the [Releases](../../releases) page and download the latest `.exe` installer.
+2. Run the installer and follow the on-screen prompts.
+3. Launch **Client File System** from the Start Menu or desktop shortcut.
+4. On first launch, open **Settings** and enter your [Anthropic API key](https://console.anthropic.com/).
 
 ## License
 
