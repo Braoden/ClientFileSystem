@@ -1,6 +1,6 @@
 # Client File System
 
-An AI-powered desktop app for managing client files and folders, built with Electron, React, and the Anthropic Claude API.
+A folder-based client management system that organizes and stores client information, then feeds that data to a Claude-powered AI chatbot. The chatbot uses the stored client details as context to answer questions or assist with tasks related to each specific client.
 
 ## Features
 
