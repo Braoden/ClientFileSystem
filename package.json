@@ -1,6 +1,6 @@
 {
   "name": "client-file-system",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "AI-powered client file explorer desktop app",
   "main": "electron/main.js",
   "scripts": {
@@ -30,7 +30,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "icons/icon.ico"
     },
     "nsis": {
       "oneClick": false,

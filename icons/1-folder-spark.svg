@@ -1,0 +1,6 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(256 256) scale(1.35) translate(-256 -256)">
+    <path d="M120 168a24 24 0 0 1 24-24h70l32 36h142a24 24 0 0 1 24 24v140a24 24 0 0 1-24 24H144a24 24 0 0 1-24-24z" fill="#3a3a5c"/>
+    <path d="M384 150l12 28 28 12-28 12-12 28-12-28-28-12 28-12z" fill="#22d3ee"/>
+  </g>
+</svg>

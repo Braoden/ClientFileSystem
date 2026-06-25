@@ -210,6 +210,7 @@
   line-height: 2;
 }
 .cfp-dropzone-icon { font-size: 48px; display: block; margin-bottom: 8px; }
+.cfp-dropzone-icon .cfp-file-icon-img { width: 48px; height: 48px; margin: 0 auto; }
 .cfp-dropzone strong { color: #a6adc8; }
 
 .cfp-file-row {
@@ -225,6 +226,7 @@
 .cfp-file-row:hover { border-color: #45475a; }
 
 .cfp-file-icon { font-size: 22px; flex-shrink: 0; }
+.cfp-file-icon-img { width: 22px; height: 22px; display: block; }
 
 .cfp-file-details {
   display: flex;

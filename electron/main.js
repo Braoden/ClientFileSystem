@@ -25,9 +25,11 @@ function createWindow(isDev) {
       nodeIntegration: false,
     },
     title: 'Client File System',
+    icon: path.join(__dirname, '..', 'icons', 'icon.ico'),
   });
 
   if (isDev) {
+    process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
     mainWindow.loadURL('http://localhost:3000');
     mainWindow.webContents.openDevTools();
   } else {

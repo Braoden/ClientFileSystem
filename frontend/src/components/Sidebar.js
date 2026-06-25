@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileModal from './ProfileModal';
 import './Sidebar.css';
+import folderIcon from '../file-icon.svg';
 
 const FILE_ICONS = {
   pdf: '📄', png: '🖼', jpg: '🖼', jpeg: '🖼', gif: '🖼', webp: '🖼',
@@ -37,7 +38,7 @@ export default function Sidebar({ clients, selectedClient, onSelectClient, onCli
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <span className="sidebar-title">📁 Clients</span>
+        <span className="sidebar-title"><img src={folderIcon} alt="" className="title-icon" /> Clients</span>
       </div>
 
       <button className="btn-nav-files" onClick={() => navigate('/')}>

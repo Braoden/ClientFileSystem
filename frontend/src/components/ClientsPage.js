@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ApiKeyModal from './ApiKeyModal';
 import './ClientsPage.css';
+import folderIcon from '../file-icon.svg';
 
 export default function ClientsPage({ clients, onClientCreated, onClientDeleted }) {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ export default function ClientsPage({ clients, onClientCreated, onClientDeleted 
   return (
     <div className="cp-layout">
       <div className="cp-topbar">
-        <h1 className="cp-title">📁 Clients</h1>        <button className="cp-btn-new" onClick={() => setShowForm((v) => !v)}>
+        <h1 className="cp-title"><img src={folderIcon} alt="" className="title-icon" /> Clients</h1>        <button className="cp-btn-new" onClick={() => setShowForm((v) => !v)}>
           {showForm ? '✕ Cancel' : '+ New Client'}
         </button>
         <button className="cp-btn-settings" onClick={() => setShowApiKey(true)} title="Settings">

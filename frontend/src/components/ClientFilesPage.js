@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ClientFilesPage.css';
+import defaultFileIcon from '../file-icon.svg';
 
 const FILE_ICONS = {
   pdf: '📄', png: '🖼', jpg: '🖼', jpeg: '🖼', gif: '🖼', webp: '🖼',
@@ -9,7 +10,7 @@ const FILE_ICONS = {
 
 function fileIcon(name) {
   const ext = name.split('.').pop().toLowerCase();
-  return FILE_ICONS[ext] || '📎';
+  return FILE_ICONS[ext] || <img src={defaultFileIcon} alt="" className="cfp-file-icon-img" />;
 }
 
 function formatSize(bytes) {
@@ -164,7 +165,7 @@ export default function ClientFilesPage({ clients, onClientsChanged }) {
                 {filesLoading && <p className="cfp-files-empty">Loading…</p>}
                 {!filesLoading && files.length === 0 && (
                   <div className="cfp-dropzone">
-                    <span className="cfp-dropzone-icon">📂</span>
+                    <span className="cfp-dropzone-icon"><img src={defaultFileIcon} alt="" className="cfp-file-icon-img" /></span>
                     <p>No files yet.</p>
                     <p>Click <strong>Upload Files</strong> to add documents.</p>
                   </div>
