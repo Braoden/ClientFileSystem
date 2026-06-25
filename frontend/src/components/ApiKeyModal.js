@@ -5,24 +5,33 @@ export default function ApiKeyModal({ onClose }) {
   const [apiKey, setApiKey] = useState('');
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('/api/settings')
-      .then((r) => r.json())
-      .then((d) => setApiKey(d.apiKey || ''));
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((d) => setApiKey(d.apiKey || ''))
+      .catch(() => setError('Could not load settings.'));
   }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await fetch('/api/settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apiKey }),
-    });
-    setLoading(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setError('');
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey }),
+      });
+      if (!res.ok) throw new Error('Failed to save settings');
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,6 +43,7 @@ export default function ApiKeyModal({ onClose }) {
         </div>
 
         <form className="modal-body" onSubmit={handleSave}>
+          {error && <div className="error-banner">⚠️ {error}</div>}
           <label>
             Anthropic API Key
             <input

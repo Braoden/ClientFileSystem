@@ -242,6 +242,7 @@
   flex-shrink: 0;
   transition: background 0.15s;
 }
+.attach-icon { width: 18px; height: 18px; object-fit: contain; display: block; }
 .btn-attach:hover { background: #45475a; }
 .btn-attach:disabled { opacity: 0.5; cursor: not-allowed; }
 

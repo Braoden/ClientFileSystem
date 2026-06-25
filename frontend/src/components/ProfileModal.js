@@ -9,21 +9,29 @@ export default function ProfileModal({ client, onClose, onSaved }) {
   });
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSave = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
     setLoading(true);
-    const res = await fetch(`/api/clients/${client.id}/profile`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    const updated = await res.json();
-    setLoading(false);
-    setSaved(true);
-    onSaved(updated);
-    setTimeout(() => { setSaved(false); onClose(); }, 800);
+    setError('');
+    try {
+      const res = await fetch(`/api/clients/${client.id}/profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error('Failed to save profile');
+      const updated = await res.json();
+      setSaved(true);
+      onSaved(updated);
+      setTimeout(() => { setSaved(false); onClose(); }, 800);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,6 +42,7 @@ export default function ProfileModal({ client, onClose, onSaved }) {
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
         <form className="modal-body" onSubmit={handleSave}>
+          {error && <div className="error-banner">⚠️ {error}</div>}
           <label>
             Name
             <input

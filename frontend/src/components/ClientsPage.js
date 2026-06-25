@@ -23,23 +23,35 @@ export default function ClientsPage({ clients, onClientCreated, onClientDeleted 
   const handleDelete = async (e, id) => {
     e.stopPropagation();
     if (!window.confirm('Delete this client and all their data?')) return;
-    await fetch(`/api/clients/${id}`, { method: 'DELETE' });
-    onClientDeleted(id);
+    try {
+      const res = await fetch(`/api/clients/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete client');
+      onClientDeleted(id);
+    } catch (err) {
+      setCreateError(err.message);
+    }
   };
 
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
     setCreating(true);
+    setCreateError('');
     try {
-      await fetch('/api/clients', {
+      const res = await fetch('/api/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to create client');
+      }
       setForm({ name: '', dateOfBirth: '', notes: '' });
       setShowForm(false);
       onClientCreated();
+    } catch (err) {
+      setCreateError(err.message);
     } finally {
       setCreating(false);
     }
@@ -57,6 +69,13 @@ export default function ClientsPage({ clients, onClientCreated, onClientDeleted 
       </div>
 
       {showApiKey && <ApiKeyModal onClose={() => setShowApiKey(false)} />}
+
+      {createError && (
+        <div className="error-banner">
+          <span>⚠️ {createError}</span>
+          <button onClick={() => setCreateError('')} title="Dismiss">✕</button>
+        </div>
+      )}
 
       {showForm && (
         <form className="cp-new-form" onSubmit={handleCreate}>

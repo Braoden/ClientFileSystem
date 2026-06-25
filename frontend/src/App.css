@@ -46,3 +46,26 @@ body {
 .empty-state p {
   font-size: 14px;
 }
+
+/* Shared error banner for failed loads/saves */
+.error-banner {
+  background: #fdecea;
+  color: #b3261e;
+  border: 1px solid #f5c6c2;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 8px 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.error-banner button {
+  background: none;
+  border: none;
+  color: #b3261e;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+}

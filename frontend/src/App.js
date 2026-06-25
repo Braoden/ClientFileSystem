@@ -55,11 +55,17 @@ function ChatLayout({ clients, fetchClients }) {
 
 export default function App() {
   const [clients, setClients] = useState([]);
+  const [loadError, setLoadError] = useState('');
 
   const fetchClients = async () => {
-    const res = await fetch('/api/clients');
-    const data = await res.json();
-    setClients(data);
+    try {
+      const res = await fetch('/api/clients');
+      if (!res.ok) throw new Error('Failed to load clients');
+      setClients(await res.json());
+      setLoadError('');
+    } catch (err) {
+      setLoadError(err.message || 'Could not reach the server.');
+    }
   };
 
   useEffect(() => { fetchClients(); }, []);
@@ -70,6 +76,12 @@ export default function App() {
 
   return (
     <HashRouter>
+      {loadError && (
+        <div className="error-banner">
+          <span>⚠️ {loadError}</span>
+          <button onClick={fetchClients} title="Retry">↻</button>
+        </div>
+      )}
       <Routes>
         <Route
           path="/"

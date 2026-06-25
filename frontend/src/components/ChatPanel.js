@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ChatPanel.css';
+import paperclipIcon from './paperclip.png';
+
+function Paperclip() {
+  return <img src={paperclipIcon} alt="" className="attach-icon" />;
+}
 
 export default function ChatPanel({ client }) {
   const [messages, setMessages] = useState([]);
@@ -7,14 +12,21 @@ export default function ChatPanel({ client }) {
   const [loading, setLoading] = useState(false);
   const [attachments, setAttachments] = useState([]); // staged files for this message
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
   const bottomRef = useRef(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const res = await fetch(`/api/clients/${client.id}/chat`);
-      const data = await res.json();
-      setMessages(data);
+      try {
+        const res = await fetch(`/api/clients/${client.id}/chat`);
+        if (!res.ok) throw new Error('Failed to load chat history');
+        setMessages(await res.json());
+        setError('');
+      } catch (err) {
+        setError(err.message);
+        setMessages([]);
+      }
     };
     fetchHistory();
     setAttachments([]);
@@ -28,17 +40,24 @@ export default function ChatPanel({ client }) {
     const files = Array.from(e.target.files);
     if (!files.length) return;
     setUploading(true);
+    setError('');
     const uploaded = [];
+    const failed = [];
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch(`/api/clients/${client.id}/files`, {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      uploaded.push(data);
+      try {
+        const res = await fetch(`/api/clients/${client.id}/files`, {
+          method: 'POST',
+          body: formData,
+        });
+        if (!res.ok) throw new Error();
+        uploaded.push(await res.json());
+      } catch {
+        failed.push(file.name);
+      }
     }
+    if (failed.length) setError(`Failed to attach: ${failed.join(', ')}`);
     setAttachments((prev) => [...prev, ...uploaded]);
     setUploading(false);
     e.target.value = '';
@@ -63,6 +82,7 @@ export default function ChatPanel({ client }) {
     setInput('');
     setAttachments([]);
     setLoading(true);
+    setError('');
 
     try {
       const res = await fetch(`/api/clients/${client.id}/chat`, {
@@ -70,9 +90,46 @@ export default function ChatPanel({ client }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input, attachments: sentAttachments }),
       });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setMessages(data.history);
+      // Errors raised before streaming begins (e.g. missing key) come back as JSON.
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Request failed');
+      }
+
+      // Append an empty assistant message, then fill it as deltas stream in.
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: '', timestamp: new Date().toISOString() },
+      ]);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let assistant = '';
+
+      const appendDelta = (delta) => {
+        assistant += delta;
+        setMessages((prev) => {
+          const copy = [...prev];
+          copy[copy.length - 1] = { ...copy[copy.length - 1], content: assistant };
+          return copy;
+        });
+      };
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop(); // keep incomplete trailing chunk
+        for (const evt of events) {
+          const line = evt.replace(/^data: /, '').trim();
+          if (!line) continue;
+          const payload = JSON.parse(line);
+          if (payload.error) throw new Error(payload.error);
+          if (payload.delta) appendDelta(payload.delta);
+        }
+      }
     } catch (err) {
       setMessages((prev) => [
         ...prev,
@@ -85,8 +142,14 @@ export default function ChatPanel({ client }) {
 
   const clearChat = async () => {
     if (!window.confirm('Clear all chat history for this client?')) return;
-    await fetch(`/api/clients/${client.id}/chat`, { method: 'DELETE' });
-    setMessages([]);
+    try {
+      const res = await fetch(`/api/clients/${client.id}/chat`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to clear chat history');
+      setMessages([]);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -116,6 +179,13 @@ export default function ChatPanel({ client }) {
         </button>
       </div>
 
+      {error && (
+        <div className="error-banner">
+          <span>⚠️ {error}</span>
+          <button onClick={() => setError('')} title="Dismiss">✕</button>
+        </div>
+      )}
+
       <div className="chat-messages">
         {messages.length === 0 && (
           <div className="chat-empty">
@@ -132,7 +202,13 @@ export default function ChatPanel({ client }) {
                 ))}
               </div>
             )}
-            <div className="message-bubble">{msg.content}</div>
+            <div className="message-bubble">
+              {msg.role === 'assistant' && msg.content === '' ? (
+                <span className="typing"><span /><span /><span /></span>
+              ) : (
+                msg.content
+              )}
+            </div>
             {msg.timestamp && (
               <div className="message-time">
                 {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -140,13 +216,6 @@ export default function ChatPanel({ client }) {
             )}
           </div>
         ))}
-        {loading && (
-          <div className="message assistant">
-            <div className="message-bubble typing">
-              <span /><span /><span />
-            </div>
-          </div>
-        )}
         <div ref={bottomRef} />
       </div>
 
@@ -176,8 +245,9 @@ export default function ChatPanel({ client }) {
           onClick={() => fileInputRef.current.click()}
           disabled={uploading}
           title="Attach file"
+          aria-label="Attach file"
         >
-          {uploading ? '⏳' : '📎'}
+          {uploading ? '⏳' : <Paperclip />}
         </button>
         <input
           value={input}

@@ -25,6 +25,7 @@ export default function ClientFilesPage({ clients, onClientsChanged }) {
   const [filesLoading, setFilesLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deletingFile, setDeletingFile] = useState(null);
+  const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -40,21 +41,36 @@ export default function ClientFilesPage({ clients, onClientsChanged }) {
 
   const loadFiles = async (clientId) => {
     setFilesLoading(true);
-    const res = await fetch(`/api/clients/${clientId}/files`);
-    const data = await res.json();
-    setFiles(data);
-    setFilesLoading(false);
+    try {
+      const res = await fetch(`/api/clients/${clientId}/files`);
+      if (!res.ok) throw new Error('Failed to load files');
+      setFiles(await res.json());
+      setError('');
+    } catch (err) {
+      setError(err.message);
+      setFiles([]);
+    } finally {
+      setFilesLoading(false);
+    }
   };
 
   const handleUpload = async (e) => {
     const picked = Array.from(e.target.files);
     if (!picked.length || !selectedClient) return;
     setUploading(true);
+    setError('');
+    const failed = [];
     for (const file of picked) {
       const fd = new FormData();
       fd.append('file', file);
-      await fetch(`/api/clients/${selectedClient.id}/files`, { method: 'POST', body: fd });
+      try {
+        const res = await fetch(`/api/clients/${selectedClient.id}/files`, { method: 'POST', body: fd });
+        if (!res.ok) throw new Error();
+      } catch {
+        failed.push(file.name);
+      }
     }
+    if (failed.length) setError(`Failed to upload: ${failed.join(', ')}`);
     e.target.value = '';
     setUploading(false);
     loadFiles(selectedClient.id);
@@ -63,9 +79,16 @@ export default function ClientFilesPage({ clients, onClientsChanged }) {
   const handleDelete = async (filename, originalName) => {
     if (!window.confirm(`Delete "${originalName}"? This cannot be undone.`)) return;
     setDeletingFile(filename);
-    await fetch(`/api/clients/${selectedClient.id}/files/${filename}`, { method: 'DELETE' });
-    setDeletingFile(null);
-    loadFiles(selectedClient.id);
+    try {
+      const res = await fetch(`/api/clients/${selectedClient.id}/files/${filename}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete file');
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingFile(null);
+      loadFiles(selectedClient.id);
+    }
   };
 
   return (
@@ -76,6 +99,13 @@ export default function ClientFilesPage({ clients, onClientsChanged }) {
         </button>
         <h1 className="cfp-title">Client Files</h1>
       </div>
+
+      {error && (
+        <div className="error-banner">
+          <span>⚠️ {error}</span>
+          <button onClick={() => setError('')} title="Dismiss">✕</button>
+        </div>
+      )}
 
       <div className="cfp-body">
         {/* Left panel — client list */}
