@@ -1,4 +1,7 @@
-# Client File System
+<h1 align="center">
+  <img src="icons/1-folder-spark.png" alt="" height="40" align="absmiddle">
+  Client File System
+</h1>
 
 > A local-first desktop app that organizes clients into folders, stores their files and profile data on your machine, and lets you chat with a Claude-powered assistant that already knows everything about the client you've selected.
 
